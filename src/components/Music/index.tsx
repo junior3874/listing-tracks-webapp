@@ -26,7 +26,6 @@ function Music({
 }: TrackProps) {
   const dispatch = useDispatch();
   const musicRef = useRef<HTMLAudioElement>(null);
-  console.log('pomba branca', id);
   const convertedSecondsForMinutes = new Date(duration * 1000)
     .toISOString()
     .substr(11, 8)
