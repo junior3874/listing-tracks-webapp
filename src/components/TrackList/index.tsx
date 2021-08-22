@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import React from 'react';
 import { Container, BtnReadMore } from './styles';
 

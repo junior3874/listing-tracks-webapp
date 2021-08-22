@@ -13,11 +13,9 @@ const playingMusic = createSlice({
           state.trackName,
         ) as HTMLAudioElement;
         audioTrack.pause();
-        console.log('pato 3');
         return { ...state, playing: false };
       }
       if (state.playing && state.trackName !== payload.trackName) {
-        console.log('pato 2');
         const getOldTrack = document.getElementById(
           state.trackName,
         ) as HTMLAudioElement;
