@@ -1,11 +1,7 @@
-import {
-  initListMusic,
-  moreMusics,
-  searchListMusic,
-} from '../ducks/listMusics';
+import { initListMusic, moreMusics, searchListMusic } from './listMusics';
 
-import { AppThunk, AppDispatch } from '..';
-import { api } from '../../service/api';
+import { AppThunk, AppDispatch } from './';
+import { api } from './../service/api';
 
 export function getTopMusics(): AppThunk {
   return async (dispatch: AppDispatch) => {
