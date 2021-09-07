@@ -6,8 +6,8 @@ import { Container, ImageBtn } from './styles';
 import BtnPlayIcon from '../../assets/btn-play.svg';
 import GifEqualizerIcon from '../../assets/equalizer.gif';
 
-import { setStatePlayingMusic } from '../../store/ducks/playingMusics';
-import { selectPlayingMusic } from '../../store/ducks/playingMusics/playingMusicsSelectors';
+import { setStatePlayingMusic } from '../../store/playingMusics';
+import { selectPlayingMusic } from '../../store/playingMusics/playingMusicsSelectors';
 import { useEffect } from 'react';
 
 export type BtnPlayOrPauseTrackProps = {

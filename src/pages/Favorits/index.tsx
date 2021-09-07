@@ -10,8 +10,8 @@ import TrackList from '../../components/TrackList';
 import {
   getFavoritList,
   searchFavoritList,
-} from '../../store/ducks/favoritList/favoritListSelectors';
-import { getMoreFavoritList, resetPages } from '../../store/ducks/favoritList';
+} from '../../store/favoritList/favoritListSelectors';
+import { getMoreFavoritList, resetPages } from '../../store/favoritList';
 import InputSearch from '../../components/InputSearch';
 import { RootState } from '../../store';
 import { useEffect } from 'react';

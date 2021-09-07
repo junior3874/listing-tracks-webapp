@@ -1,13 +1,3 @@
-export interface TrackProps {
-  id: number;
-  link: string;
-  title: string;
-  artistName: string;
-  albumImage: string;
-  duration: number;
-  preview: string;
-}
-
 export type TrackPropsDTO = {
   id: number;
   link: string;
@@ -22,19 +12,13 @@ export type TrackPropsDTO = {
   preview: string;
 };
 
-export default class Track implements TrackProps {
+export default class Track {
   id;
-
   link;
-
   title;
-
   artistName;
-
   preview;
-
   albumImage;
-
   duration;
 
   constructor({

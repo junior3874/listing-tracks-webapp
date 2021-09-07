@@ -1,26 +1,26 @@
 import React, { useEffect } from 'react';
-
 import { useSelector, useDispatch } from 'react-redux';
-import { Container } from './styles';
+
 import Header from '../../components/Header';
 import Music from '../../components/Music';
 import TrackList from '../../components/TrackList';
-import {
-  getMoreMusic,
-  getTopMusics,
-  searchMusic,
-} from '../../store/axiosActions';
+import InputSearch from '../../components/InputSearch';
+
+import { getMoreMusic, getTopMusics, searchMusic } from '../../store/apiThunks';
+
+import { getListMusics } from '../../store/listMusics/listMusicsSelector';
+
+import { removeListMusics } from '../../store/listMusics';
+
+import { Container } from './styles';
 
 import Track from '../../entities/track';
-import { getListMusics } from '../../store/ducks/listMusics/listMusicsSelector';
-import InputSearch from '../../components/InputSearch';
-import { removeListMusics } from '../../store/ducks/listMusics';
 
 function Home() {
   const musicList = useSelector(getListMusics);
 
   const dispatch = useDispatch();
-  -useEffect(() => {
+  useEffect(() => {
     dispatch(getTopMusics());
     return () => dispatch(removeListMusics() as unknown as undefined);
   }, []);
@@ -39,6 +39,7 @@ function Home() {
     if (getValueElement === '') return;
     dispatch(searchMusic(getValueElement!));
   };
+
   return (
     <>
       <Header>
@@ -48,18 +49,18 @@ function Home() {
       </Header>
       <Container>
         <TrackList command={() => moreMusic()}>
-          {musicList.data?.map((track, index) => {
-            const trackEntity = new Track(track);
+          {musicList.data.map(trackProps => {
+            const track = new Track(trackProps);
             return (
               <Music
-                albumImage={trackEntity.albumImage}
-                artistName={trackEntity.artistName}
-                duration={trackEntity.duration}
-                key={index}
-                id={trackEntity.id}
-                link={trackEntity.link}
-                preview={trackEntity.preview}
-                title={trackEntity.title}
+                albumImage={track.albumImage}
+                artistName={track.artistName}
+                duration={track.duration}
+                key={track.id}
+                id={track.id}
+                link={track.link}
+                preview={track.preview}
+                title={track.title}
               />
             );
           })}

@@ -4,7 +4,7 @@ import { Container, FavoritIconImage } from './styles';
 
 import FavoritIcon from '../../assets/favorit-icon.svg';
 import FavoritIconEmpty from '../../assets/favorit-icon-empty.svg';
-import { verifyTrackHasAddedInFavoritList } from '../../store/ducks/favoritList/favoritListSelectors';
+import { verifyTrackHasAddedInFavoritList } from '../../store/favoritList/favoritListSelectors';
 
 import { RootState } from '../../store';
 

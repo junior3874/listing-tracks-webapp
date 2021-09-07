@@ -12,11 +12,6 @@ function Header({ children }: HeaderProps) {
   return (
     <Container>
       <div className="top-content">
-        <span>
-          <Link to="/">
-            <img src={LogoIcon} alt="company name" />
-          </Link>
-        </span>
         <NavLink exact to="/favoritos" activeClassName="selected">
           Vá para os favoritos
         </NavLink>

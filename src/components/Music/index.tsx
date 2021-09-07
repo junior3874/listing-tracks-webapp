@@ -1,6 +1,5 @@
 import React, { memo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { TrackProps } from '../../entities/track';
 
 import { Container } from './styles';
 
@@ -13,7 +12,8 @@ import ClockIcon from '../../assets/clock.svg';
 import {
   addToFavorit,
   removeMusicInFavorits,
-} from '../../store/ducks/favoritList';
+} from '../../store/favoritList/index';
+import Track from '../../entities/track';
 
 function Music({
   albumImage,
@@ -23,7 +23,7 @@ function Music({
   id,
   preview,
   title,
-}: TrackProps) {
+}: Track) {
   const dispatch = useDispatch();
   const musicRef = useRef<HTMLAudioElement>(null);
   const convertedSecondsForMinutes = new Date(duration * 1000)
