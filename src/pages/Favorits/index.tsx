@@ -15,6 +15,7 @@ import { getMoreFavoritList, resetPages } from '../../store/favoritList';
 import InputSearch from '../../components/InputSearch';
 import { RootState } from '../../store';
 import { useEffect } from 'react';
+import Player from '../../components/player';
 
 function Favorits() {
   const [searchMode, setSearchMode] = useState(false);
@@ -55,18 +56,20 @@ function Favorits() {
       </Header>
       <Container>
         <TrackList command={() => moreFavoritMusic()}>
-          {favoritMusic?.map(track => (
-            <Music
-              albumImage={track.albumImage}
-              artistName={track.artistName}
-              duration={track.duration}
-              key={track.id}
-              id={track.id}
-              link={track.link}
-              preview={track.preview}
-              title={track.title}
-            />
-          ))}
+          <Player>
+            {favoritMusic?.map(track => (
+              <Music
+                albumImage={track.albumImage}
+                artistName={track.artistName}
+                duration={track.duration}
+                key={track.id}
+                id={track.id}
+                link={track.link}
+                preview={track.preview}
+                title={track.title}
+              />
+            ))}
+          </Player>
         </TrackList>
       </Container>
     </>
