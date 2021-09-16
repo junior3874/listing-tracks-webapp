@@ -6,6 +6,7 @@ const favoritList = createSlice({
   initialState: {
     page: 1,
     data: [] as Track[],
+    loading: true,
   },
   reducers: {
     initFavoritList(state, { payload }) {
