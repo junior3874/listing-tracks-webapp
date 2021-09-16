@@ -49,12 +49,11 @@ function Favorits() {
 
   return (
     <>
-      <Header>
+      <Header />
+      <Container>
         <form onSubmit={e => handleFormAction(e)}>
           <InputSearch placeholder="Faça uma busca" />
         </form>
-      </Header>
-      <Container>
         <TrackList command={() => moreFavoritMusic()}>
           <Player>
             {favoritMusic?.map(track => (
