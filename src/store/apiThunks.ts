@@ -1,45 +1,54 @@
-import { initListMusic, moreMusics, searchListMusic } from './listMusics';
-
+import {
+  initListMusic,
+  makingInitListMusic,
+  makingSearchMusic,
+  moreMusics,
+  searchListMusic,
+} from './listMusics';
 import { AppThunk, AppDispatch } from './';
-import { api } from './../service/api';
+
+import { RequisitionToolWithAxios } from '../service/requisitionToolWithAxios';
+
+const apiLimit = 10;
+const objectMakeRequest = new RequisitionToolWithAxios({ limit: apiLimit });
 
 export function getTopMusics(): AppThunk {
   return async (dispatch: AppDispatch) => {
-    api
-      .get('/home?link=api.deezer.com/chart/0/tracks')
-      .then(res => res.data)
-      .then(({ data: res }) => dispatch(initListMusic(res.data)))
-      .catch((err: Promise<Error>) => console.log(err));
+    dispatch(makingInitListMusic({}));
+    const response = await objectMakeRequest.getTopTracks();
+
+    if (response.message == 'okay') {
+      return dispatch(initListMusic(response.data.data));
+    }
   };
 }
 
 export function getMoreMusic(
   index: number,
-  url = '/home?link=api.deezer.com/chart/0/tracks?',
+  url = '/chart/0/tracks?',
 ): AppThunk {
   return async (dispatch: AppDispatch) => {
-    const newIndex = index + 10;
-    api
-      .get(`${url}index=${newIndex}%26limit=10`)
-      .then(res => res.data)
-      .then(({ data: res }) => dispatch(moreMusics(res.data)))
-      .catch((err: Promise<Error>) => console.log(err));
+    const nextIndex = index + apiLimit;
+    const response = await objectMakeRequest.getMoreTracks(url, nextIndex);
+
+    if (response.message == 'okay') {
+      dispatch(moreMusics(response.data.data));
+    }
   };
 }
 
-export function searchMusic(param: string): AppThunk {
+export function searchMusic(params: string): AppThunk {
   return async (dispatch: AppDispatch) => {
-    api
-      .get(`/home?link=api.deezer.com/search/track?q=${param}%26limit=10`)
-      .then(res => res.data)
-      .then(({ data: res }) =>
-        dispatch(
-          searchListMusic({
-            data: res.data,
-            url: `/home?link=api.deezer.com/search/track?q=${param}%26`,
-          }),
-        ),
-      )
-      .catch((err: Promise<Error>) => console.log(err));
+    await dispatch(makingSearchMusic({}));
+    const response = await objectMakeRequest.searchTracks(params);
+
+    if (response.message == 'okay') {
+      return dispatch(
+        searchListMusic({
+          data: response.data.data,
+          url: `/search/track?q=${params}`,
+        }),
+      );
+    }
   };
 }
