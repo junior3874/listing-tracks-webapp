@@ -4,11 +4,7 @@ import { Container } from './styles';
 
 import LogoIcon from '../../assets/logo.png';
 
-type HeaderProps = {
-  children: React.ReactNode;
-};
-
-function Header({ children }: HeaderProps) {
+function Header() {
   return (
     <Container>
       <div className="top-content">
@@ -20,8 +16,6 @@ function Header({ children }: HeaderProps) {
           Vá para a página inicial
         </NavLink>
       </div>
-
-      {children}
     </Container>
   );
 }
