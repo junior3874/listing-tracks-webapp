@@ -19,7 +19,6 @@ import { useEffect } from 'react';
 
 function Music(track: Track) {
   const currentTrack = new Audio(track.preview);
-
   const { playingMusic, _setPlayingMusic } = useContext(PlayerContext);
 
   const dispatch = useDispatch();
@@ -32,19 +31,24 @@ function Music(track: Track) {
     .join(':')
     .concat('m');
 
+  const verifyTrackHasPlaying =
+    playingMusic.currentAudioInformations === track && !playingMusic.paused;
+
+  //=================================================================
+  // handlers
+  //=================================================================
+
   const AddOrRemoveTrackFromFavorits = (typeBtn: boolean) => {
-    if (typeBtn) return dispatch(removeMusicInFavorits(track.id));
+    if (typeBtn) return dispatch(removeMusicInFavorits(track));
     return dispatch(addToFavorit(track));
   };
 
-  const handlerSetPlayingMusic = () =>
+  const handlerSetPlayingMusic = () => {
     _setPlayingMusic({
       currentAudio: currentTrack,
       currentAudioInformations: track,
     });
-
-  const verifyTrackHasPlaying =
-    playingMusic.currentAudioInformations === track && !playingMusic.paused;
+  };
 
   return (
     <Container>
