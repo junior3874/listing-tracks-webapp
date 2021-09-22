@@ -23,13 +23,31 @@ export const Container = styled.div`
         width: 100%;
       }
 
-      .btn-play-music {
+      button {
         position: absolute;
         margin: 0 auto;
         left: 0;
         right: 0;
-        text-align: center;
         width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+
+        :hover {
+          width: 42px;
+          height: 42px;
+        }
+
+        img {
+          padding: 8px;
+          width: 100%;
+          margin-left: 2px;
+        }
       }
     }
 
@@ -46,6 +64,22 @@ export const Container = styled.div`
         font-size: 12px;
         line-height: 14px;
         color: #616161;
+      }
+      button {
+        max-width: 158px;
+        padding: 10px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        background: #444444;
+        border-radius: 5px;
+        border: none;
+        a {
+          font-size: 12px;
+          line-height: 14px;
+          text-decoration: none;
+          color: #ffffff;
+        }
       }
 
       span {

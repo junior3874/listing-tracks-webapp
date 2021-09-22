@@ -4,19 +4,10 @@ import { Container } from './styles';
 
 import LogoIcon from '../../assets/logo.png';
 
-type HeaderProps = {
-  children: React.ReactNode;
-};
-
-function Header({ children }: HeaderProps) {
+function Header() {
   return (
     <Container>
       <div className="top-content">
-        <span>
-          <Link to="/">
-            <img src={LogoIcon} alt="company name" />
-          </Link>
-        </span>
         <NavLink exact to="/favoritos" activeClassName="selected">
           Vá para os favoritos
         </NavLink>
@@ -25,8 +16,6 @@ function Header({ children }: HeaderProps) {
           Vá para a página inicial
         </NavLink>
       </div>
-
-      {children}
     </Container>
   );
 }

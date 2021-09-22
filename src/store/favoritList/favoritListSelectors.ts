@@ -1,5 +1,5 @@
-import { RootState } from '../..';
-import Track from '../../../entities/track';
+import { RootState } from '..';
+import Track from '../../entities/track';
 
 const elementInPage = 10;
 

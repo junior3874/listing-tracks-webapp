@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TrackPropsDTO } from '../../../entities/track';
-import { RootState } from '../..';
+import { TrackPropsDTO } from '../../entities/track';
+import { RootState } from '..';
 
 const listMusic = createSlice({
   name: 'listMusic',

@@ -5,13 +5,14 @@ import SearchIcon from '../../assets/search.svg';
 
 type InputProps = {
   placeholder: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
 };
 
-function InputSearch({ placeholder }: InputProps) {
+function InputSearch({ placeholder, inputRef }: InputProps) {
   return (
     <Container>
       <img src={SearchIcon} alt="search" />
-      <input type="text" placeholder={placeholder} />
+      <input ref={inputRef} type="text" placeholder={placeholder} />
     </Container>
   );
 }

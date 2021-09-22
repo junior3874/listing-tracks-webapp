@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import Track from '../../../entities/track';
+import Track from '../../entities/track';
 
 const favoritList = createSlice({
   name: 'favoritList',
   initialState: {
     page: 1,
     data: [] as Track[],
+    loading: true,
   },
   reducers: {
     initFavoritList(state, { payload }) {
