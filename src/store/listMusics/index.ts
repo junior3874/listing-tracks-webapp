@@ -5,30 +5,51 @@ import { RootState } from '..';
 const listMusic = createSlice({
   name: 'listMusic',
   initialState: {
-    page: 0,
     data: [] as TrackPropsDTO[],
-    url: '',
+    loading: true,
+    error: false,
   },
   reducers: {
+    makingInitListMusic(state, _) {
+      return { ...state, loading: true };
+    },
+    makingRequestWithError(state, _) {
+      return { ...state, loading: false, error: true };
+    },
     initListMusic(state, { payload }) {
-      return { ...state, data: [...state.data, ...payload] };
+      return { ...state, data: [...state.data, ...payload], loading: false };
     },
 
-    searchListMusic(state, { payload }) {
-      return { page: 0, url: payload.url, data: [...payload.data] };
+    makingSearchMusic(state, _) {
+      return { ...state, loading: true };
+    },
+
+    searchListMusic(_, { payload }) {
+      return {
+        data: [...payload.data],
+        loading: false,
+        error: false,
+      };
     },
     moreMusics(state, { payload }) {
-      const newIndex = state.page + 10;
-      return { ...state, page: newIndex, data: [...state.data, ...payload] };
+      return { ...state, data: [...state.data, ...payload.data] };
     },
-    removeListMusics(state) {
+    removeListMusics(state, action) {
       return { ...state, data: [] as TrackPropsDTO[] };
     },
   },
 });
 
-export const { initListMusic, searchListMusic, moreMusics, removeListMusics } =
-  listMusic.actions;
+export const {
+  initListMusic,
+  searchListMusic,
+  moreMusics,
+  removeListMusics,
+  makingSearchMusic,
+  makingInitListMusic,
+  makingRequestWithError,
+} = listMusic.actions;
+
 export const selectListMusic = (state: RootState) => state.listMusics;
 
 export default listMusic.reducer;
