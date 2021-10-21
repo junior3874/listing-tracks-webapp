@@ -12,15 +12,16 @@ export const Container = styled.div`
     .track-image {
       display: flex;
       align-items: center;
-      width: 120px;
+      min-width: 64px;
       height: 120px;
-      border-radius: 18px;
-      overflow: hidden;
+
       position: relative;
       cursor: pointer;
+
       img:not(:nth-child(2)) {
         object-fit: cover;
         width: 100%;
+        border-radius: 12px;
       }
 
       button {
