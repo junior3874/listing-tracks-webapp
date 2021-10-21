@@ -12,7 +12,7 @@ export const Container = styled.div`
   border: 1px solid #e3e3e3;
   border-radius: 8px;
   input {
-    flex: 1;
+    width: 100%;
     background-color: inherit;
     border: none;
     outline: none;
