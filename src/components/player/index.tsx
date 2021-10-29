@@ -4,11 +4,10 @@ import { useCallback } from 'react';
 import Track from '../../entities/track';
 
 type PlayerProps = {
-  children: React.ReactElement[];
+  children: React.ReactElement;
 };
 
 type EntityTrackProps = {
-  currentAudio: HTMLAudioElement;
   currentAudioInformations: Track;
   paused?: boolean;
 };
@@ -16,68 +15,88 @@ type EntityTrackProps = {
 type PlayerContextProps = {
   playingMusic: EntityTrackProps;
   _setPlayingMusic: (track: EntityTrackProps) => void;
+  currentTrack: HTMLAudioElement | undefined;
 };
 
 export const PlayerContext = createContext({} as PlayerContextProps);
 
-function Player({ children }: PlayerProps) {
+function PlayerProvider({ children }: PlayerProps) {
   const [playingMusic, setPlayingMusic] = useState({} as EntityTrackProps);
+  const [currentTrack, setCurrentTrack] = useState<HTMLAudioElement>();
 
   useEffect(() => {
-    playingMusic.currentAudio?.addEventListener('ended', () =>
+    currentTrack?.addEventListener('ended', () =>
       setPlayingMusic(prev => ({ ...prev, paused: true })),
     );
 
-    return playingMusic.currentAudio?.removeEventListener('ended', () =>
-      setPlayingMusic(prev => ({ ...prev, paused: true })),
-    );
+    return () => {
+      currentTrack?.removeEventListener('ended', () =>
+        setPlayingMusic(prev => ({ ...prev, paused: true })),
+      );
+    };
   }, [playingMusic]);
 
   const _setPlayingMusic = useCallback(
-    (track: EntityTrackProps) => {
-      // =============================================
-
-      if (!playingMusic.currentAudio) playNewMusic(track);
+    async (track: EntityTrackProps) => {
+      if (!currentTrack) {
+        await playNewMusic(track);
+      }
       // =============================================
       else if (
-        playingMusic.currentAudioInformations === track.currentAudioInformations
+        playingMusic.currentAudioInformations.id ===
+        track.currentAudioInformations.id
       ) {
-        if (playingMusic.currentAudio.paused) return playCurrentTrack();
+        if (currentTrack.paused) return await playCurrentTrack();
         pauseMusic();
       }
 
       // =============================================
       else {
-        if (!playingMusic.currentAudio.paused)
-          playingMusic.currentAudio.pause();
+        if (!currentTrack.paused) currentTrack.pause();
 
         playNewMusic(track);
       }
-
-      // =============================================
     },
-    [playingMusic],
+    [playingMusic, currentTrack],
   );
 
-  const playNewMusic = (track: EntityTrackProps) => {
-    setPlayingMusic({ ...track, paused: false });
-    track.currentAudio.play();
+  const playNewMusic = async (track: EntityTrackProps) => {
+    const res = await playTrackAfterVerifyError(track);
+
+    if (!res) {
+      setPlayingMusic({ ...track, paused: false });
+      return;
+    }
   };
+
   const playCurrentTrack = () => {
-    playingMusic.currentAudio.play();
     setPlayingMusic(prev => ({ ...prev, paused: false }));
+    currentTrack!.play();
+    return;
   };
 
   const pauseMusic = () => {
-    playingMusic.currentAudio.pause();
+    currentTrack!.pause();
     setPlayingMusic(prev => ({ ...prev, paused: true }));
   };
 
+  const playTrackAfterVerifyError = async (track = playingMusic) => {
+    const newTrack = new Audio(track.currentAudioInformations.preview);
+    const res = await newTrack.play().catch(_ => true);
+
+    if (!res) {
+      setCurrentTrack(newTrack);
+    }
+    return res;
+  };
+
   return (
-    <PlayerContext.Provider value={{ playingMusic, _setPlayingMusic }}>
+    <PlayerContext.Provider
+      value={{ playingMusic, _setPlayingMusic, currentTrack }}
+    >
       {children}
     </PlayerContext.Provider>
   );
 }
 
-export default Player;
+export default PlayerProvider;

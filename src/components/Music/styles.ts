@@ -8,26 +8,30 @@ export const Container = styled.div`
   .content-left {
     display: flex;
     align-items: center;
+    width: 50%;
 
     .track-image {
       display: flex;
       align-items: center;
-      width: 120px;
+      min-width: 64px;
       height: 120px;
-      border-radius: 18px;
-      overflow: hidden;
+
       position: relative;
+
       cursor: pointer;
+
       img:not(:nth-child(2)) {
         object-fit: cover;
         width: 100%;
+        border-radius: 12px;
       }
 
       button {
         position: absolute;
         margin: 0 auto;
-        left: 0;
-        right: 0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -36,7 +40,6 @@ export const Container = styled.div`
         justify-content: center;
         border: none;
         cursor: pointer;
-        box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 
         :hover {
           width: 42px;
@@ -96,3 +99,40 @@ export const Container = styled.div`
     }
   }
 `;
+
+type ContainerProgressBarProps = {
+  percent: number;
+};
+
+export const SvgCircularProgressBardWrapper = styled.div<ContainerProgressBarProps>`
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px black, 0 0 0 10px white, 0 0 0 11px black;
+  svg {
+    min-width: 50px !important;
+    min-height: 50px !important;
+
+    circle {
+      fill: none;
+      stroke: cornflowerblue;
+      stroke-width: 10px;
+      stroke-dasharray: 500px;
+      stroke-dashoffset: ${props => {
+        const getCurrentValue = (props.percent / 30) * 100;
+        return 500 - (100 * getCurrentValue) / 120;
+      }};
+    }
+  }
+`;
+
+// 289

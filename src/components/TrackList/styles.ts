@@ -16,4 +16,10 @@ export const BtnReadMore = styled.button`
 
   color: #616161;
   font-size: 20px;
+
+  #pink {
+    background-color: black;
+    height: 300px;
+    width: 300px;
+  }
 `;

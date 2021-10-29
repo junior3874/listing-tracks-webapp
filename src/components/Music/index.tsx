@@ -1,7 +1,7 @@
-import React, { memo, useRef, useContext, useState } from 'react';
+import React, { memo, useRef, useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Container } from './styles';
+import { Container, SvgCircularProgressBardWrapper } from './styles';
 
 import BtnAddToFavorit from '../btnAddToFavorit';
 
@@ -15,12 +15,13 @@ import {
 } from '../../store/favoritList/index';
 import Track from '../../entities/track';
 import { PlayerContext } from '../player';
-import { useEffect } from 'react';
 
 function Music(track: Track) {
-  const currentTrack = new Audio(track.preview);
-  const { playingMusic, _setPlayingMusic } = useContext(PlayerContext);
+  const [trackHasPlaying, setTrackHasPlaying] = useState(false);
+  const { playingMusic, _setPlayingMusic, currentTrack } =
+    useContext(PlayerContext);
 
+  const [currentTrackTimestamp, setCurrentTrackTimeStamp] = useState(0);
   const dispatch = useDispatch();
 
   const convertedSecondsForMinutes = new Date(track.duration * 1000)
@@ -30,9 +31,6 @@ function Music(track: Track) {
     .slice(-2)
     .join(':')
     .concat('m');
-
-  const verifyTrackHasPlaying =
-    playingMusic.currentAudioInformations === track && !playingMusic.paused;
 
   //=================================================================
   // handlers
@@ -45,10 +43,47 @@ function Music(track: Track) {
 
   const handlerSetPlayingMusic = () => {
     _setPlayingMusic({
-      currentAudio: currentTrack,
       currentAudioInformations: track,
     });
   };
+
+  useEffect(() => {
+    (() => {
+      if (
+        playingMusic.currentAudioInformations?.id === track.id &&
+        !playingMusic.paused
+      ) {
+        setTrackHasPlaying(true);
+        return;
+      }
+      setTrackHasPlaying(false);
+    })();
+    if (playingMusic.currentAudioInformations?.id === track.id) {
+      currentTrack!.ontimeupdate = (e: any) => {
+        setCurrentTrackTimeStamp(e.target.currentTime);
+      };
+
+      currentTrack!.onended = () => setCurrentTrackTimeStamp(0);
+    }
+
+    return () => {
+      currentTrack?.removeEventListener('timeupdate', () => (e: any) => {
+        setCurrentTrackTimeStamp(e.target.currentTime);
+      });
+      currentTrack?.removeEventListener('ended', () =>
+        setCurrentTrackTimeStamp(0),
+      );
+      setCurrentTrackTimeStamp(0);
+    };
+  }, [playingMusic]);
+
+  useEffect(() => {
+    const getCurrentTimeStamp =
+      playingMusic.currentAudioInformations?.id === track.id
+        ? currentTrack?.currentTime || 0
+        : 0;
+    setCurrentTrackTimeStamp(getCurrentTimeStamp);
+  }, []);
 
   return (
     <Container>
@@ -56,11 +91,17 @@ function Music(track: Track) {
         <div className="track-image">
           <img src={track.albumImage} alt="track" />
 
+          <SvgCircularProgressBardWrapper percent={currentTrackTimestamp}>
+            <svg>
+              <circle cx="25" cy="75" r="20" strokeLinecap="round"></circle>
+            </svg>
+          </SvgCircularProgressBardWrapper>
+
           <button>
             <img
               alt="play or pause music"
               onClick={handlerSetPlayingMusic}
-              src={verifyTrackHasPlaying ? GifEqualizerIcon : BtnPlayIcon}
+              src={trackHasPlaying ? GifEqualizerIcon : BtnPlayIcon}
             />
           </button>
         </div>
