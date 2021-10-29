@@ -1,6 +1,7 @@
 import Track from '../../entities/track';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 
 import Header from '../../components/Header';
@@ -8,65 +9,145 @@ import Music from '../../components/Music';
 import TrackList from '../../components/TrackList';
 import InputSearch from '../../components/InputSearch';
 
-import { getMoreMusic, getTopMusics, searchMusic } from '../../store/apiThunks';
 import { getListMusics } from '../../store/listMusics/listMusicsSelector';
-import { removeListMusics } from '../../store/listMusics';
+import {
+  initListMusic,
+  makingInitListMusic,
+  makingRequestWithError,
+  moreMusics,
+  removeListMusics,
+} from '../../store/listMusics';
 
 import { Container } from './styles';
 import Player from '../../components/player';
+import Loading from '../../components/loading';
+import { RequisitionToolWithAxios } from '../../service/requisitionToolWithAxios';
+
+import CloseIcon from '../../assets/close-icon.png';
+
+const requisitionToolWithAxios = new RequisitionToolWithAxios({
+  limit: 10,
+});
 
 function Home() {
-  const [playingMusic, setPlayingMusic] = useState({} as Track);
-  const musicList = useSelector(getListMusics);
+  const [searchParams, setSearchParams] = useState('/chart/0/tracks');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [maxIndex, setMaxIndex] = useState(undefined);
+
+  //================================================================
+  // Contexts
+  //================================================================
+
+  const { data, loading, error } = useSelector(getListMusics);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getTopMusics());
-    return () => dispatch(removeListMusics() as unknown as undefined);
-  }, []);
+  //=================================================================
+  // Refs
+  //=================================================================
 
-  const moreMusic = () => {
-    musicList.url
-      ? dispatch(getMoreMusic(musicList.page, musicList.url))
-      : dispatch(getMoreMusic(musicList.page));
-  };
+  const inputSearchRef = useRef<HTMLInputElement>(null);
 
+  //=================================================================
+  // Handlers
+  //=================================================================
   const handleFormAction = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const getValueElement = (
-      (e.target as HTMLFormElement).elements[0] as HTMLInputElement
-    ).value.toString();
-    if (getValueElement === '') return;
-    dispatch(searchMusic(getValueElement!));
+
+    const inputRefValue = inputSearchRef.current!.value;
+    if (inputRefValue! == '') return resetParams();
+
+    setSearchParams(`/search/track?q=${inputRefValue}`);
+    setCurrentIndex(0);
   };
+
+  const moreMusic = () => {
+    if (maxIndex && currentIndex >= maxIndex!) {
+      return true;
+    }
+    setCurrentIndex(prev => (prev += requisitionToolWithAxios.limit));
+    return false;
+  };
+
+  const resetParams = () => {
+    if (searchParams === '/chart/0/tracks') return;
+
+    inputSearchRef.current!.value = '';
+    setSearchParams('/chart/0/tracks');
+    setCurrentIndex(0);
+  };
+
+  //=================================================================
+  // hooks
+  //=================================================================
+
+  useEffect(() => {
+    (async () => {
+      dispatch(makingInitListMusic({}));
+      if (searchParams === '/chart/0/tracks') {
+        const res = await requisitionToolWithAxios.getTopTracks();
+        if (res.message == 'okay') {
+          dispatch(initListMusic(res.data.data));
+        }
+        return;
+      }
+      const res = await requisitionToolWithAxios.searchTracks(searchParams);
+      if (res.message == 'okay') {
+        dispatch(initListMusic(res.data.data));
+      }
+      dispatch(makingRequestWithError({}));
+    })();
+
+    return () => {
+      dispatch(removeListMusics({}));
+    };
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (currentIndex === 0) return;
+    (async () => {
+      const res = await requisitionToolWithAxios.getMoreTracks(
+        searchParams,
+        currentIndex + requisitionToolWithAxios.limit,
+      );
+
+      if (res.message === 'okay') {
+        dispatch(moreMusics(res.data));
+        return false;
+      }
+    })();
+  }, [currentIndex]);
 
   return (
     <>
-      <Header>
-        <form onSubmit={e => handleFormAction(e)}>
-          <InputSearch placeholder="Faça uma busca" />
-        </form>
-      </Header>
+      <Header />
       <Container>
-        <TrackList command={() => moreMusic()}>
-          <Player>
-            {musicList.data.map(trackProps => {
-              const track = new Track(trackProps);
-              return (
-                <Music
-                  albumImage={track.albumImage}
-                  artistName={track.artistName}
-                  duration={track.duration}
-                  key={track.id}
-                  id={track.id}
-                  link={track.link}
-                  preview={track.preview}
-                  title={track.title}
-                />
-              );
-            })}
-          </Player>
-        </TrackList>
+        <form onSubmit={e => handleFormAction(e)}>
+          <InputSearch placeholder="Faça uma busca" inputRef={inputSearchRef} />
+          <img onClick={resetParams} id="clear-search" src={CloseIcon} alt="" />
+        </form>
+        <main>
+          {loading ? (
+            <Loading />
+          ) : (
+            <TrackList command={() => moreMusic()} data={data} error={error}>
+              {data.map(trackProps => {
+                const track = new Track(trackProps);
+                return (
+                  <Music
+                    albumImage={track.albumImage}
+                    artistName={track.artistName}
+                    duration={track.duration}
+                    key={track.id}
+                    id={track.id}
+                    link={track.link}
+                    preview={track.preview}
+                    title={track.title}
+                  />
+                );
+              })}
+            </TrackList>
+          )}
+        </main>
       </Container>
     </>
   );
