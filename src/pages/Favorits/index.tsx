@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Container } from './styles';
@@ -11,52 +11,61 @@ import {
   getFavoritList,
   searchFavoritList,
 } from '../../store/favoritList/favoritListSelectors';
-import { getMoreFavoritList, resetPages } from '../../store/favoritList';
+
 import InputSearch from '../../components/InputSearch';
 import { RootState } from '../../store';
-import { useEffect } from 'react';
-import Player from '../../components/player';
 
 function Favorits() {
+  //===================================================
+  // States
+  //===================================================
+
   const [searchMode, setSearchMode] = useState(false);
   const [searchParams, setSearchParams] = useState('');
+
+  //===================================================
+  // Refs
+  //===================================================
+
+  const inputSearchRef = useRef<HTMLInputElement>(null);
+
+  //================================================================
+  // Contexts
+  //================================================================
+
   const favoritMusic = useSelector(
     searchMode
       ? (state: RootState) => searchFavoritList(state, searchParams)
       : getFavoritList,
   );
 
-  const dispatch = useDispatch();
+  // =====================================================
+  // Handlers
+  // =====================================================
 
-  const moreFavoritMusic = () => {
-    dispatch(getMoreFavoritList({}));
-  };
   const handleFormAction = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const getValueElement = (
-      (e.target as HTMLFormElement).elements[0] as HTMLInputElement
-    ).value.toString();
-    if (getValueElement === '') {
+
+    const inputSearchValue = inputSearchRef.current?.value;
+    if (inputSearchValue === '') {
       return setSearchMode(false);
     }
-    setSearchParams(getValueElement);
+
+    setSearchParams(inputSearchValue!);
     setSearchMode(true);
   };
-
-  useEffect(() => {
-    return dispatch(resetPages({}) as unknown as undefined);
-  }, []);
 
   return (
     <>
       <Header />
       <Container>
         <form onSubmit={e => handleFormAction(e)}>
-          <InputSearch placeholder="Faça uma busca" />
+          <InputSearch placeholder="Faça uma busca" inputRef={inputSearchRef} />
         </form>
-        <TrackList command={() => moreFavoritMusic()}>
-          <Player>
-            {favoritMusic?.map(track => (
+
+        <main>
+          <TrackList data={favoritMusic}>
+            {favoritMusic.map(track => (
               <Music
                 albumImage={track.albumImage}
                 artistName={track.artistName}
@@ -68,8 +77,8 @@ function Favorits() {
                 title={track.title}
               />
             ))}
-          </Player>
-        </TrackList>
+          </TrackList>
+        </main>
       </Container>
     </>
   );
