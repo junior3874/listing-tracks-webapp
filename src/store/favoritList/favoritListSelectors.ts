@@ -8,8 +8,14 @@ export const verifyTrackHasAddedInFavoritList = (
   trackId: number,
 ) => state.favoritList.data?.find(element => element.id === trackId);
 
-export const getFavoritList = (state: RootState) =>
-  state.favoritList.data?.slice(0, state.favoritList.page * elementInPage);
+export const getFavoritList = (state: RootState) => {
+  const moreMusics = state.favoritList.data.slice(
+    0,
+    state.favoritList.page * elementInPage,
+  );
+
+  return moreMusics;
+};
 
 export const searchFavoritList = (state: RootState, params: string) =>
   state.favoritList.data?.reduce((acumulator, element) => {
@@ -20,3 +26,5 @@ export const searchFavoritList = (state: RootState, params: string) =>
     }
     return acumulator;
   }, [] as Track[]);
+
+export const favoritMusicSelector = (state: RootState) => state.favoritList;
