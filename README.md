@@ -1,10 +1,10 @@
 
 
-# Project Title
+## Titulo do projeto
 
 Listing Tracks
 
-## Run Locally
+## Rode localmente
 
 Para clonar o projeto, abra um terminal ou CMD e siga os passos abaixo.
 
