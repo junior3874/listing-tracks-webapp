@@ -33,5 +33,5 @@ Inicie o projeto
   
 ## Demo
 
-https://6122ad02720fe10008253345--pedantic-shirley-5c0f27.netlify.app/
+https://pedantic-shirley-5c0f27.netlify.app/
   
