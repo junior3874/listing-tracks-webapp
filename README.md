@@ -9,25 +9,25 @@ Listing Tracks
 Para clonar o projeto, abra um terminal ou CMD e siga os passos abaixo.
 
 ```bash
-  git clone https://link-to-project
+  git clone   git clone https://https://github.com/junior3874/listing-tracks-webapp
 ```
 
 vá para o projeto
 
 ```bash
-  cd my-project
+  cd listing-tracks-webapp
 ```
 
 Instale as dependências do projeto
 
 ```bash
-  npm install
+  npm install || yarn
 ```
 
 Inicie o projeto
 
 ```bash
-  npm run start
+  npm run start || yarn start
 ```
 
   
