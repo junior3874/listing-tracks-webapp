@@ -100,39 +100,4 @@ export const Container = styled.div`
   }
 `;
 
-type ContainerProgressBarProps = {
-  percent: number;
-};
-
-export const SvgCircularProgressBardWrapper = styled.div<ContainerProgressBarProps>`
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px black, 0 0 0 10px white, 0 0 0 11px black;
-  svg {
-    min-width: 50px !important;
-    min-height: 50px !important;
-
-    circle {
-      fill: none;
-      stroke: cornflowerblue;
-      stroke-width: 10px;
-      stroke-dasharray: 500px;
-      stroke-dashoffset: ${props => {
-        const getCurrentValue = (props.percent / 30) * 100;
-        return 500 - (100 * getCurrentValue) / 120;
-      }};
-    }
-  }
-`;
-
 // 289
