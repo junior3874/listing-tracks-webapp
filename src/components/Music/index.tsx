@@ -1,7 +1,7 @@
 import React, { memo, useRef, useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Container, SvgCircularProgressBardWrapper } from './styles';
+import { Container } from './styles';
 
 import BtnAddToFavorit from '../btnAddToFavorit';
 
@@ -13,16 +13,20 @@ import {
   addToFavorit,
   removeMusicInFavorits,
 } from '../../store/favoritList/index';
+
 import Track from '../../entities/track';
 import { PlayerContext } from '../player';
+import CircularProgressBar from './circular-progress-bar';
 
 function Music(track: Track) {
-  const [trackHasPlaying, setTrackHasPlaying] = useState(false);
-  const { playingMusic, _setPlayingMusic, currentTrack } =
-    useContext(PlayerContext);
-
-  const [currentTrackTimestamp, setCurrentTrackTimeStamp] = useState(0);
   const dispatch = useDispatch();
+
+  const { playingMusic, _setPlayingMusic } = useContext(PlayerContext);
+  const [trackHasPlaying, setTrackHasPlaying] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTrackTimestampPercent, setCurrentTrackTimestampPercent] =
+    useState(0);
 
   const convertedSecondsForMinutes = new Date(track.duration * 1000)
     .toISOString()
@@ -48,54 +52,60 @@ function Music(track: Track) {
   };
 
   useEffect(() => {
-    (() => {
-      if (
-        playingMusic.currentAudioInformations?.id === track.id &&
-        !playingMusic.paused
-      ) {
-        setTrackHasPlaying(true);
-        return;
-      }
-      setTrackHasPlaying(false);
-    })();
-    if (playingMusic.currentAudioInformations?.id === track.id) {
-      currentTrack!.ontimeupdate = (e: any) => {
-        setCurrentTrackTimeStamp(e.target.currentTime);
-      };
+    const timeUpdatedEvent = (e: any) => {
+      const duration = e.target.duration;
+      const currentTime = e.target.currentTime;
 
-      currentTrack!.onended = () => setCurrentTrackTimeStamp(0);
-    }
+      const percent = (currentTime / duration) * 100;
+      setCurrentTrackTimestampPercent(percent);
+    };
+    const timeEndedEvent = (e: Event) => {
+      handlerSetPlayingMusic();
+      setCurrentTrackTimestampPercent(0);
+    };
+    audioRef.current?.addEventListener('timeupdate', timeUpdatedEvent);
+    audioRef.current?.addEventListener('ended', timeEndedEvent);
 
     return () => {
-      currentTrack?.removeEventListener('timeupdate', () => (e: any) => {
-        setCurrentTrackTimeStamp(e.target.currentTime);
-      });
-      currentTrack?.removeEventListener('ended', () =>
-        setCurrentTrackTimeStamp(0),
-      );
-      setCurrentTrackTimeStamp(0);
+      audioRef.current?.removeEventListener('timeupdate', timeUpdatedEvent);
+      audioRef.current?.removeEventListener('ended', timeEndedEvent);
     };
+  }, []);
+
+  useEffect(() => {
+    playingMusic.currentAudioInformations &&
+    !playingMusic.paused &&
+    playingMusic.currentAudioInformations.id === track.id
+      ? setTrackHasPlaying(true)
+      : setTrackHasPlaying(false);
   }, [playingMusic]);
 
   useEffect(() => {
-    const getCurrentTimeStamp =
-      playingMusic.currentAudioInformations?.id === track.id
-        ? currentTrack?.currentTime || 0
-        : 0;
-    setCurrentTrackTimeStamp(getCurrentTimeStamp);
-  }, []);
+    if (trackHasPlaying) {
+      audioRef.current
+        ?.play()
+        .then(_ => _)
+        .catch(_ => {
+          handlerSetPlayingMusic();
+          alert('track indisponível');
+        });
+      return;
+    }
+    audioRef.current?.pause();
+  }, [trackHasPlaying]);
 
   return (
     <Container>
+      <audio ref={audioRef} src={track.preview} />
+
       <div className="content-left">
         <div className="track-image">
           <img src={track.albumImage} alt="track" />
 
-          <SvgCircularProgressBardWrapper percent={currentTrackTimestamp}>
-            <svg>
-              <circle cx="25" cy="75" r="20" strokeLinecap="round"></circle>
-            </svg>
-          </SvgCircularProgressBardWrapper>
+          <CircularProgressBar
+            percent={currentTrackTimestampPercent}
+            radius={20}
+          />
 
           <button>
             <img
