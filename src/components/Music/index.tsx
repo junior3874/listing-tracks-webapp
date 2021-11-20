@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { Container } from './styles';
 
-import BtnAddToFavorit from '../btnAddToFavorit';
+import BtnAddToFavorit from './add-music-in-favorit-button';
 
 import ClockIcon from '../../assets/clock.svg';
 import BtnPlayIcon from '../../assets/btn-play.svg';

@@ -8,7 +8,7 @@ export const Container = styled.div`
   .content-left {
     display: flex;
     align-items: center;
-    width: 50%;
+    width: 100%;
 
     .track-image {
       display: flex;
@@ -28,23 +28,17 @@ export const Container = styled.div`
 
       button {
         position: absolute;
-        margin: 0 auto;
+
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
         border: none;
         cursor: pointer;
-
-        :hover {
-          width: 42px;
-          height: 42px;
-        }
 
         img {
           padding: 8px;
