@@ -21,7 +21,8 @@ import CircularProgressBar from './circular-progress-bar';
 function Music(track: Track) {
   const dispatch = useDispatch();
 
-  const { playingMusic, _setPlayingMusic } = useContext(PlayerContext);
+  const { playingMusic, _setPlayingMusic, pauseMusic, playCurrentTrack } =
+    useContext(PlayerContext);
   const [trackHasPlaying, setTrackHasPlaying] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -59,9 +60,9 @@ function Music(track: Track) {
       const percent = (currentTime / duration) * 100;
       setCurrentTrackTimestampPercent(percent);
     };
-    const timeEndedEvent = (e: Event) => {
-      handlerSetPlayingMusic();
+    const timeEndedEvent = () => {
       setCurrentTrackTimestampPercent(0);
+      pauseMusic();
     };
     audioRef.current?.addEventListener('timeupdate', timeUpdatedEvent);
     audioRef.current?.addEventListener('ended', timeEndedEvent);
@@ -86,7 +87,7 @@ function Music(track: Track) {
         ?.play()
         .then(_ => _)
         .catch(_ => {
-          handlerSetPlayingMusic();
+          pauseMusic();
           alert('track indisponível');
         });
       return;
