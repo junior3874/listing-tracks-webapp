@@ -19,11 +19,11 @@ import {
 } from '../../store/listMusics';
 
 import { Container } from './styles';
-import Player from '../../components/player';
 import Loading from '../../components/loading';
 import { RequisitionToolWithAxios } from '../../service/requisitionToolWithAxios';
 
 import CloseIcon from '../../assets/close-icon.png';
+import PlayerProvider from '../../components/player';
 
 const requisitionToolWithAxios = new RequisitionToolWithAxios({
   limit: 10,
@@ -56,6 +56,8 @@ function Home() {
     const inputRefValue = inputSearchRef.current!.value;
     if (inputRefValue! == '') return resetParams();
 
+    //@ts-ignore
+
     setSearchParams(`/search/track?q=${inputRefValue}`);
     setCurrentIndex(0);
   };
@@ -80,21 +82,33 @@ function Home() {
   // hooks
   //=================================================================
 
+  const getTopMusics = async () => {
+    const res = await requisitionToolWithAxios.getTopTracks();
+    if (res.message == 'okay') {
+      dispatch(initListMusic(res.data.data));
+      return;
+    }
+    dispatch(makingRequestWithError({}));
+  };
+
+  const getMusicsByParam = async () => {
+    const res = await requisitionToolWithAxios.searchTracks(searchParams);
+    if (res.message == 'okay') {
+      dispatch(initListMusic(res.data.data));
+      return;
+    }
+    dispatch(makingRequestWithError({}));
+  };
+
   useEffect(() => {
     (async () => {
       dispatch(makingInitListMusic({}));
       if (searchParams === '/chart/0/tracks') {
-        const res = await requisitionToolWithAxios.getTopTracks();
-        if (res.message == 'okay') {
-          dispatch(initListMusic(res.data.data));
-        }
+        getTopMusics();
         return;
       }
-      const res = await requisitionToolWithAxios.searchTracks(searchParams);
-      if (res.message == 'okay') {
-        dispatch(initListMusic(res.data.data));
-      }
-      dispatch(makingRequestWithError({}));
+
+      getMusicsByParam();
     })();
 
     return () => {
@@ -126,27 +140,29 @@ function Home() {
           <img onClick={resetParams} id="clear-search" src={CloseIcon} alt="" />
         </form>
         <main>
-          {loading ? (
-            <Loading />
-          ) : (
-            <TrackList command={() => moreMusic()} data={data} error={error}>
-              {data.map(trackProps => {
-                const track = new Track(trackProps);
-                return (
-                  <Music
-                    albumImage={track.albumImage}
-                    artistName={track.artistName}
-                    duration={track.duration}
-                    key={track.id}
-                    id={track.id}
-                    link={track.link}
-                    preview={track.preview}
-                    title={track.title}
-                  />
-                );
-              })}
-            </TrackList>
-          )}
+          <PlayerProvider>
+            {loading ? (
+              <Loading />
+            ) : (
+              <TrackList command={() => moreMusic()} data={data} error={error}>
+                {data.map(trackProps => {
+                  const track = new Track(trackProps);
+                  return (
+                    <Music
+                      albumImage={track.albumImage}
+                      artistName={track.artistName}
+                      duration={track.duration}
+                      key={track.id}
+                      id={track.id}
+                      link={track.link}
+                      preview={track.preview}
+                      title={track.title}
+                    />
+                  );
+                })}
+              </TrackList>
+            )}
+          </PlayerProvider>
         </main>
       </Container>
     </>
