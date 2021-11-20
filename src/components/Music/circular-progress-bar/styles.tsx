@@ -13,11 +13,11 @@ export const SvgCircularProgressBardWrapper = styled.svg<ContainerProgressBarPro
   transform: rotate(-90deg);
   circle {
     fill: transparent;
-    stroke: cornflowerblue;
+    stroke: #6198ff;
     stroke-width: 10;
     stroke-dasharray: ${({ radius }) => `${radius} ${radius}`};
     stroke-dashoffset: ${({ percent }) => `${percent}`};
-    stroke-linecap: round;
+
     transition: stroke-dashoffset 0.5s;
   }
 `;
