@@ -14,14 +14,13 @@ import {
 
 import InputSearch from '../../components/InputSearch';
 import { RootState } from '../../store';
+import PlayerProvider from '../../components/player';
 
+import CloseIcon from '../../assets/close-icon.png';
 function Favorits() {
   //===================================================
   // States
   //===================================================
-
-  const [searchMode, setSearchMode] = useState(false);
-  const [searchParams, setSearchParams] = useState('');
 
   //===================================================
   // Refs
@@ -33,51 +32,29 @@ function Favorits() {
   // Contexts
   //================================================================
 
-  const favoritMusic = useSelector(
-    searchMode
-      ? (state: RootState) => searchFavoritList(state, searchParams)
-      : getFavoritList,
-  );
-
-  // =====================================================
-  // Handlers
-  // =====================================================
-
-  const handleFormAction = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const inputSearchValue = inputSearchRef.current?.value;
-    if (inputSearchValue === '') {
-      return setSearchMode(false);
-    }
-
-    setSearchParams(inputSearchValue!);
-    setSearchMode(true);
-  };
+  const favoritMusic = useSelector(getFavoritList);
 
   return (
     <>
       <Header />
       <Container>
-        <form onSubmit={e => handleFormAction(e)}>
-          <InputSearch placeholder="Faça uma busca" inputRef={inputSearchRef} />
-        </form>
-
         <main>
-          <TrackList data={favoritMusic}>
-            {favoritMusic.map(track => (
-              <Music
-                albumImage={track.albumImage}
-                artistName={track.artistName}
-                duration={track.duration}
-                key={track.id}
-                id={track.id}
-                link={track.link}
-                preview={track.preview}
-                title={track.title}
-              />
-            ))}
-          </TrackList>
+          <PlayerProvider>
+            <TrackList data={favoritMusic}>
+              {favoritMusic.map(track => (
+                <Music
+                  albumImage={track.albumImage}
+                  artistName={track.artistName}
+                  duration={track.duration}
+                  key={track.id}
+                  id={track.id}
+                  link={track.link}
+                  preview={track.preview}
+                  title={track.title}
+                />
+              ))}
+            </TrackList>
+          </PlayerProvider>
         </main>
       </Container>
     </>

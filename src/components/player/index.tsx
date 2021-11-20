@@ -15,6 +15,8 @@ type EntityTrackProps = {
 type PlayerContextProps = {
   playingMusic: EntityTrackProps;
   _setPlayingMusic: (track: EntityTrackProps) => void;
+  pauseMusic: () => void;
+  playCurrentTrack: () => void;
 };
 
 export const PlayerContext = createContext({} as PlayerContextProps);
@@ -51,7 +53,9 @@ function PlayerProvider({ children }: PlayerProps) {
   };
 
   return (
-    <PlayerContext.Provider value={{ playingMusic, _setPlayingMusic }}>
+    <PlayerContext.Provider
+      value={{ playingMusic, _setPlayingMusic, playCurrentTrack, pauseMusic }}
+    >
       {children}
     </PlayerContext.Provider>
   );

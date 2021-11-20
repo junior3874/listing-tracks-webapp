@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Container, FavoritIconImage } from './styles';
 
-import FavoritIcon from '../../assets/favorit-icon.svg';
-import FavoritIconEmpty from '../../assets/favorit-icon-empty.svg';
-import { verifyTrackHasAddedInFavoritList } from '../../store/favoritList/favoritListSelectors';
+import FavoritIcon from '../../../assets/favorit-icon.svg';
+import FavoritIconEmpty from '../../../assets/favorit-icon-empty.svg';
+import { verifyTrackHasAddedInFavoritList } from '../../../store/favoritList/favoritListSelectors';
 
-import { RootState } from '../../store';
+import { RootState } from '../../../store';
 
 type BtnAddToFavoritProp = {
   trackId: number;
